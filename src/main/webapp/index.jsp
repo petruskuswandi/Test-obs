@@ -24,7 +24,7 @@
   </style>
 </head>
 <body>
-<h2>Welcome, <%= session.getAttribute("username") %></h2>
+<h2>Welcome, <a href="#" onclick="showPopup('<%= session.getAttribute("studentName") %>')"><%= session.getAttribute("username") %></a></h2>
 <p>You have successfully logged in!</p>
 <table border="1">
   <tr>
