@@ -8,6 +8,12 @@ public class Department {
     private List<Student> Students;
     private Integer Total;
 
+    public Department(String departmentName){
+        DepartmentName = departmentName;
+        Students = new ArrayList<>();
+        Total = 0;
+    }
+
     public String getDepartment() {
         return DepartmentName;
     }
@@ -32,12 +38,6 @@ public class Department {
         Total = total;
     }
 
-    public Department(String departmentName){
-        DepartmentName = departmentName;
-        Students = new ArrayList<>();
-        Total = 0;
-    }
-
     public Double CheckPassCondition(List<Student> students){
         int result = 0;
         for (Student student: students) {
@@ -59,5 +59,13 @@ public class Department {
         if (student.CheckLulus()){
             Total++;
         }
+    }
+
+    public String getDepartmentName() {
+        return DepartmentName;
+    }
+
+    public void setDepartmentName(String departmentName) {
+        DepartmentName = departmentName;
     }
 }

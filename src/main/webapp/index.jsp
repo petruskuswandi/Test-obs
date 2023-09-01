@@ -7,6 +7,21 @@
 <html>
 <head>
   <title>Success Page</title>
+  <style>
+    /* CSS untuk gaya popup */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 20px;
+      box-shadow: 0px 0px 10px #888888;
+      z-index: 9999;
+    }
+  </style>
 </head>
 <body>
 <h2>Welcome, <%= session.getAttribute("username") %></h2>
@@ -19,65 +34,64 @@
     <th>Pass %</th>
   </tr>
   <%
-    // Create a list of departments and add students to them
-    List<Department> departmentList = new ArrayList<>();
-    Department department1 = new Department("Dep 1");
-    Department department2 = new Department("Dep 2");
-    Department department3 = new Department("Dep 3");
-
-    department1.UpdateStudent(new Student("S1", 35L));
-    department1.UpdateStudent(new Student("S2", 70L));
-    department1.UpdateStudent(new Student("S3", 60L));
-    department1.UpdateStudent(new Student("S4", 90L));
-
-    department2.UpdateStudent(new Student("S5", 30L));
-
-    department3.UpdateStudent(new Student("S6", 32L));
-    department3.UpdateStudent(new Student("S7", 70L));
-    department3.UpdateStudent(new Student("S8", 20L));
-
-    departmentList.add(department1);
-    departmentList.add(department2);
-    departmentList.add(department3);
+    List<Department> departmentList = (List<Department>) request.getSession().getAttribute("departmentList");
 
     for (Department department : departmentList) {
       List<Student> students = department.getStudents();
-      int rowCount = students.size();
+      int rowCount = students.size(); // Menghitung jumlah siswa dalam departemen
+      boolean departmentDisplayed = false; // Variabel untuk menandai apakah kolom "Department" telah ditampilkan
+      boolean passPercentageDisplayed = false; // Variabel untuk menandai apakah kolom "Pass %" telah ditampilkan
   %>
-  <tr>
-    <%
-      // Display the department name only for the first row of each department
-      if (rowCount > 0) {
-    %>
-    <td rowspan="<%=rowCount%>"><%= department.getDepartment() %></td>
-    <%
-      }
-    %>
-    <td><%= students.get(0).getId() %></td>
-    <td><%= students.get(0).getMarks() %></td>
-    <%
-      // Display the pass percentage only for the first row of each department
-      if (rowCount > 0) {
-    %>
-    <td rowspan="<%=rowCount%>"><%= String.format("%.2f", department.CheckPassCondition(students)) %></td>
-    <%
-      }
-    %>
-  </tr>
   <%
-    // Display additional students in the same department
-    for (int i = 1; i < rowCount; i++) {
-      Student student = students.get(i);
+    for (Student student : students) {
+      String passPercentage = String.format("%.2f", student.getPassPercentage(department.getStudents()));
   %>
   <tr>
-    <td><%= student.getId() %></td>
+    <%
+      // Menampilkan department hanya pada baris pertama departemen
+      if (!departmentDisplayed) {
+    %>
+    <td rowspan="<%= rowCount %>" style="text-align: center"><%= department.getDepartmentName() %></td>
+    <%
+        departmentDisplayed = true;
+      }
+    %>
+    <td><a href="#" onclick="showPopup('<%= student.getStudentName() %>')"><%= student.getId() %></a></td>
     <td><%= student.getMarks() %></td>
+    <%
+      // Menampilkan pass percentage hanya pada baris pertama departemen
+      if (!passPercentageDisplayed) {
+    %>
+    <td rowspan="<%= rowCount %>" style="text-align: center"><%= passPercentage %></td>
+    <%
+        passPercentageDisplayed = true;
+      }
+    %>
   </tr>
   <%
-      }
+    }
+  %>
+  <%
     }
   %>
 </table>
+
+<!-- Popup untuk menampilkan nama siswa -->
+<div id="popup" class="popup">
+  <span id="popupContent"></span>
+  <button onclick="hidePopup()">Close</button>
+</div>
+
+<script>
+  function showPopup(studentName) {
+    document.getElementById("popupContent").innerHTML = "Student Name: " + studentName;
+    document.getElementById("popup").style.display = "block";
+  }
+
+  function hidePopup() {
+    document.getElementById("popup").style.display = "none";
+  }
+</script>
 
 </body>
 </html>
